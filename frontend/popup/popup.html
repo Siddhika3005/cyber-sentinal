@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberSentinal - Scam Detector</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <h1 class="logo">🛡️ CyberSentinal AI</h1>
+            <div class="header-controls">
+                <button class="icon-btn" id="settingsBtn" title="Settings">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M12 1v6m0 6v6M4.22 4.22l4.24 4.24m3.08 3.08l4.24 4.24M1 12h6m6 0h6M4.22 19.78l4.24-4.24m3.08-3.08l4.24-4.24M19.78 19.78l-4.24-4.24m-3.08-3.08l-4.24-4.24"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Scam Detection Card -->
+        <div class="detection-card" id="detectionCard">
+            <div class="card-header">
+                <h2>Scam Detection</h2>
+                <span class="badge badge-safe">Safe Site</span>
+            </div>
+            <div class="detection-content">
+                <div class="detection-circle">
+                    <svg class="progress-ring" width="140" height="140">
+                        <circle class="progress-ring-bg" cx="70" cy="70" r="60"></circle>
+                        <circle class="progress-ring-fill" cx="70" cy="70" r="60"
+                            style="--percentage: 98;"></circle>
+                    </svg>
+                    <div class="percentage-display" id="percentageDisplay">98%</div>
+                </div>
+                <div class="detection-info">
+                    <p class="status-text" id="statusText">Page is completely safe</p>
+                    <p class="sub-text">No suspicious threats detected on this website</p>
+                </div>
+            </div>
+            <div class="scan-time">
+                <span id="scanTime">Last scan: Just now</span>
+            </div>
+        </div>
+
+        <!-- Threat Details Section -->
+        <div class="threat-details" id="threatDetails" style="display: none;">
+            <div class="threat-header">
+                <h3>⚠️ Potential Threats Detected</h3>
+            </div>
+            <div id="threatList" class="threat-list">
+                <!-- Threats will be populated here -->
+            </div>
+        </div>
+
+        <!-- Alert Card (shown when threat detected) -->
+        <div class="alert-card" id="alertCard" style="display: none;">
+            <div class="alert-icon">⚠️</div>
+            <div class="alert-content">
+                <h3 id="alertTitle">Potential Scam Detected</h3>
+                <p id="alertMessage">This message contains patterns commonly found in scam or phishing attempts. Do not
+                    share personal information.</p>
+                <button class="btn btn-primary" id="viewDetailsBtn">View Details</button>
+                <button class="btn btn-secondary" id="markSafeBtn">Mark as Safe</button>
+            </div>
+        </div>
+
+        <!-- Report Modal (hidden by default) -->
+        <div class="modal" id="reportModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Scam Analysis Report</h2>
+                    <button class="close-btn" id="closeModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="risk-indicator">
+                        <div class="risk-circle" id="riskCircle">
+                            <span class="risk-percentage" id="riskPercentage">82%</span>
+                        </div>
+                        <div class="risk-label">
+                            <span id="riskLevel" class="risk-high">High Risk Detected</span>
+                            <p id="riskDescription">This message violates up to 5 critical phishing indicators. Forensic evidence confirms</p>
+                        </div>
+                    </div>
+
+                    <div class="report-section">
+                        <h3>🔍 Detected Patterns</h3>
+                        <div class="patterns-list" id="patternsList">
+                            <div class="pattern-item">
+                                <span class="pattern-icon">✓</span>
+                                <span class="pattern-text">Malicious URL detected</span>
+                            </div>
+                            <div class="pattern-item">
+                                <span class="pattern-icon">✓</span>
+                                <span class="pattern-text">Suspicious shortened link detected</span>
+                            </div>
+                            <div class="pattern-item">
+                                <span class="pattern-icon">✓</span>
+                                <span class="pattern-text">Urgency tactics identified</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="report-section">
+                        <h3>⚡ Recommended Actions</h3>
+                        <div class="recommendations-list">
+                            <div class="recommendation-item">
+                                <input type="checkbox" id="rec1">
+                                <label for="rec1">Avoid clicking any links or downloading attachments from this source</label>
+                            </div>
+                            <div class="recommendation-item">
+                                <input type="checkbox" id="rec2">
+                                <label for="rec2">Report this message to your email/chat provider</label>
+                            </div>
+                            <div class="recommendation-item">
+                                <input type="checkbox" id="rec3">
+                                <label for="rec3">Enable two-factor authentication on your accounts</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="report-section">
+                        <h3>📋 Forensic Data</h3>
+                        <div class="forensic-data">
+                            <p><strong>Detection Method:</strong> <span id="detectionMethod">Content Analysis</span></p>
+                            <p><strong>Confidence Score:</strong> <span id="confidenceScore">94%</span></p>
+                            <p><strong>Threat Category:</strong> <span id="threatCategory">Phishing Attack</span></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" id="closeModalBtn">Close</button>
+                    <button class="btn btn-danger" id="reportPhishingBtn">Report as Phishing</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Panel (hidden by default) -->
+        <div class="settings-panel" id="settingsPanel" style="display: none;">
+            <div class="settings-header">
+                <h3>Protection Settings</h3>
+                <button class="close-btn" id="closeSettings">&times;</button>
+            </div>
+
+            <div class="settings-content">
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <label>Enable Real-time Protection</label>
+                        <p class="setting-description">Monitor all browser activities for scam threats</p>
+                    </div>
+                    <label class="toggle">
+                        <input type="checkbox" id="realtimeProtection" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <label>Show Warnings for Suspicious Sites</label>
+                        <p class="setting-description">Display alerts when visiting potentially dangerous websites</p>
+                    </div>
+                    <label class="toggle">
+                        <input type="checkbox" id="showWarnings" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <label>Block Known Phishing Sites</label>
+                        <p class="setting-description">Automatically block access to confirmed phishing URLs</p>
+                    </div>
+                    <label class="toggle">
+                        <input type="checkbox" id="blockPhishing" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <label>Advanced Security Analytics</label>
+                        <p class="setting-description">Enable behavioral analysis for advanced threat detection</p>
+                    </div>
+                    <label class="toggle">
+                        <input type="checkbox" id="advancedAnalytics" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="settings-footer">
+                <button class="btn btn-secondary" id="viewHistoryBtn">View History</button>
+                <button class="btn btn-primary" id="saveSettingsBtn">Save Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Warning Badge (for embedded warnings) -->
+    <div class="warning-badge" id="warningBadge" style="display: none;">
+        <div class="warning-badge-content">
+            <div class="warning-header">
+                <h4>🛡️ Scam Detector</h4>
+                <button class="badge-close" id="badgeClose">&times;</button>
+            </div>
+            <div class="warning-section">
+                <h5 id="warningTitle">Unknown Sender</h5>
+                <p id="warningSubtitle">This email comes from an unrecognized source</p>
+            </div>
+            <div class="warning-actions">
+                <span class="action-label">Action Required!</span>
+                <p id="warningActionText">Your account has been locked. Please verify your identity immediately by clicking below to restore access.</p>
+                <button class="btn btn-primary" id="verifyBtn">Verify Identity</button>
+            </div>
+            <div class="warning-footer">
+                <a href="#" id="learnMoreLink">Learn more about account security</a>
+                <a href="#" id="reportLink">Report this message</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+
+</html>
