@@ -20,8 +20,16 @@ except Exception as e:
     print(f"Error loading model: {e}")
     model, vectorizer = None, None
 
-@app.route('/predict', methods=['POST'])
+@app.route('/', methods=['GET'])
+def home():
+    return jsonify({"status": "running", "message": "Cyber Sentinel API is up and running. Use the /predict endpoint to scan messages."})
+
+@app.route('/predict', methods=['POST', 'GET'])
 def predict():
+    # If users hit this route with GET directly in their browser
+    if request.method == 'GET':
+        return jsonify({"message": "This endpoint requires a POST request with purely JSON data like {'text': 'message'}"})
+        
     data = request.json
     if not data or 'text' not in data:
         return jsonify({'error': 'Missing text field'}), 400
