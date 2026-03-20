@@ -9,41 +9,77 @@ const scamDetector = {
     },
     
     scanPage() {
+        // Get page text: email content, form content, and visible text
         const pageContent = document.body.innerText;
+        
+        if (!pageContent || pageContent.trim().length < 10) {
+            console.log('Page content too short to analyze');
+            return;
+        }
+        
+        console.log('Scanning page content:', pageContent.substring(0, 100));
         
         chrome.runtime.sendMessage({
             action: 'detectScam',
             data: pageContent
         }, (response) => {
-            if (response && response.result && response.result.isScam) {
-                this.highlightScamPatterns(pageContent);
-                this.showWarningBadge(response.result);
+            if (chrome.runtime.lastError) {
+                console.error('Message sending error:', chrome.runtime.lastError);
+                return;
+            }
+            
+            console.log('Detection response:', response);
+            
+            if (response && response.result) {
+                const result = response.result;
+                
+                if (result.isScam) {
+                    console.warn('Scam detected:', result);
+                    this.highlightScamPatterns(pageContent);
+                    this.showWarningBadge(result);
+                } else {
+                    console.log('Page marked as safe');
+                }
             }
         });
     },
     
     highlightScamPatterns(content) {
-        const scamKeywords = [
-            'verify your account',
-            'confirm identity',
-            'urgent action',
-            'account locked',
-            'unusual activity',
-            'click here immediately'
-        ];
-        
-        const bodyText = document.body.innerHTML;
-        let highlightedContent = bodyText;
-        
-        scamKeywords.forEach(keyword => {
-            const regex = new RegExp(`(${keyword})`, 'gi');
-            highlightedContent = highlightedContent.replace(
-                regex,
-                '<mark style="background: rgba(239, 68, 68, 0.3); border: 1px solid #ef4444; padding: 2px;">$1</mark>'
-            );
-        });
-        
-        document.body.innerHTML = highlightedContent;
+        try {
+            const scamKeywords = [
+                'verify your account',
+                'confirm identity',
+                'urgent action',
+                'account locked',
+                'unusual activity',
+                'click here immediately',
+                'update payment',
+                'verify password',
+                'confirm password',
+                'security alert',
+                'suspicious activity',
+                'claim prize',
+                'congratulations won',
+                'unusual login',
+                'unauthorized activity'
+            ];
+            
+            const bodyText = document.body.innerHTML;
+            let highlightedContent = bodyText;
+            
+            scamKeywords.forEach(keyword => {
+                const regex = new RegExp(`(${keyword})`, 'gi');
+                highlightedContent = highlightedContent.replace(
+                    regex,
+                    '<mark style="background: rgba(239, 68, 68, 0.5); border: 2px solid #ef4444; padding: 2px; border-radius: 2px;">$1</mark>'
+                );
+            });
+            
+            document.body.innerHTML = highlightedContent;
+            console.log('Highlights applied to scam keywords');
+        } catch (error) {
+            console.error('Error highlighting patterns:', error);
+        }
     },
     
     injectFloatingBadge() {
@@ -147,3 +183,21 @@ if (document.readyState === 'loading') {
 } else {
     scamDetector.init();
 }
+
+// ============ MESSAGE HANDLERS ============
+
+/**
+ * Handle messages from background script
+ */
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.action === 'getPageContent') {
+        // Return current page content for feedback submission
+        const content = document.body.innerText;
+        sendResponse({
+            content: content,
+            title: document.title,
+            url: window.location.href
+        });
+    }
+    return true;
+});
