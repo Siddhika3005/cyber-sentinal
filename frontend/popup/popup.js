@@ -7,28 +7,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function initializeUI() {
-    // Initialize modal with SVG gradient
-    const svg = document.querySelector('.progress-ring');
-    const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-    const gradient = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
-    gradient.id = 'gradient';
-    gradient.setAttribute('x1', '0%');
-    gradient.setAttribute('y1', '0%');
-    gradient.setAttribute('x2', '100%');
-    gradient.setAttribute('y2', '100%');
-    
-    const stop1 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
-    stop1.setAttribute('offset', '0%');
-    stop1.setAttribute('stop-color', '#22c55e');
-    
-    const stop2 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
-    stop2.setAttribute('offset', '100%');
-    stop2.setAttribute('stop-color', '#16a34a');
-    
-    gradient.appendChild(stop1);
-    gradient.appendChild(stop2);
-    defs.appendChild(gradient);
-    svg.insertBefore(defs, svg.firstChild);
+    // Initialize with no SVG gradient needed - using CSS colors instead
+    // Motion and animations are pure CSS-based for better performance
+    console.log('[UI] Initialized popup with new glass-morphism design');
 }
 
 function attachEventListeners() {
@@ -204,31 +185,44 @@ function updateDetectionDisplay(result) {
     
     console.log(`[Popup] Safety: ${safetyScore}%, Threat: ${threatLevel}`);
     
-    // Update percentage
-    document.getElementById('percentageDisplay').textContent = Math.round(safetyScore) + '%';
-    
-    // Update status
+    const detectionCard = document.querySelector('.detection-card');
+    const percentageDisplay = document.getElementById('percentageDisplay');
     const statusText = document.getElementById('statusText');
     const statusElement = document.querySelector('.detection-card .card-header .badge');
+    const alertCard = document.getElementById('alertCard');
+    const threatDetails = document.getElementById('threatDetails');
     
+    // Update percentage
+    percentageDisplay.textContent = Math.round(safetyScore) + '%';
+    
+    // Remove threat state if safe
     if (threatLevel === 'safe') {
-        statusText.textContent = 'Page appears safe';
+        detectionCard.classList.remove('threat-state');
+        statusText.textContent = 'All Systems Secure';
         statusElement.className = 'badge badge-safe';
         statusElement.textContent = 'Safe Site';
-        document.getElementById('alertCard').style.display = 'none';
-        document.getElementById('threatDetails').style.display = 'none';
+        alertCard.style.display = 'none';
+        threatDetails.style.display = 'none';
     } else if (threatLevel === 'warning') {
-        statusText.textContent = 'Potential threats detected ⚠️';
+        detectionCard.classList.remove('threat-state');
+        statusText.textContent = 'Potential Threats Detected';
         statusElement.className = 'badge badge-warning';
         statusElement.textContent = 'Warning';
-        document.getElementById('alertCard').style.display = 'block';
-        document.getElementById('threatDetails').style.display = 'block';
+        alertCard.style.display = 'block';
+        threatDetails.style.display = 'block';
     } else if (threatLevel === 'danger') {
-        statusText.textContent = '🚨 PHISHING/SCAM DETECTED';
+        // Add threat state class for visual changes
+        detectionCard.classList.add('threat-state');
+        statusText.textContent = 'Threat Neutralized';
         statusElement.className = 'badge badge-danger';
-        statusElement.textContent = 'Dangerous';
-        document.getElementById('alertCard').style.display = 'block';
-        document.getElementById('threatDetails').style.display = 'block';
+        statusElement.textContent = 'Intervention Active';
+        alertCard.style.display = 'block';
+        threatDetails.style.display = 'block';
+        
+        // Update alert title and message
+        document.getElementById('alertTitle').textContent = 'Malicious Payload Detected';
+        document.getElementById('alertMessage').textContent = result.message || 
+            'This content violates multiple security indicators. Do not interact with suspicious links or share personal information.';
         
         // Show threat details if available
         if (result.findings && Object.keys(result.findings).length > 0) {
@@ -257,7 +251,7 @@ function updateDetectionDisplay(result) {
 }
         document.getElementById('alertCard').style.display = 'block';
         document.getElementById('threatDetails').style.display = 'block';
-    }
+    
     
     // Update threat list
     if (analysis.threats && analysis.threats.length > 0) {
@@ -273,7 +267,7 @@ function updateDetectionDisplay(result) {
     
     // Update scan time
     document.getElementById('scanTime').textContent = 'Last scan: ' + new Date().toLocaleTimeString();
-}
+
 
 function getCurrentTabUrl() {
     // This will be called with the active tab info
@@ -287,13 +281,16 @@ function showNotification(message) {
         top: 20px;
         right: 20px;
         padding: 12px 20px;
-        background: #22c55e;
-        color: white;
-        border-radius: 6px;
-        font-size: 14px;
-        font-weight: 500;
+        background: #3BE8B0;
+        color: #0B0E14;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
         z-index: 3000;
         animation: slideIn 0.3s ease;
+        box-shadow: 0 8px 24px rgba(59, 232, 176, 0.3);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(59, 232, 176, 0.3);
     `;
     notification.textContent = message;
     document.body.appendChild(notification);
