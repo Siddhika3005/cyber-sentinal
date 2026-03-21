@@ -170,6 +170,7 @@ function updateDetectionDisplay(result) {
     
     // Handle both old format (URL analysis) and new format (hybrid detection)
     let safetyScore, threatLevel, message, detectedCount = 0;
+    let confidenceScore = 99.8; // Default confidence
     
     if (result.isScam !== undefined) {
         // New format: hybrid detection result
@@ -177,10 +178,12 @@ function updateDetectionDisplay(result) {
         threatLevel = result.isScam ? 'danger' : 'safe';
         message = result.message;
         detectedCount = result.detectedCount || 0;
+        confidenceScore = result.safetyConfidence || 99.8;
     } else {
         // Old format: URL-only analysis
         safetyScore = result.safetyScore || 98;
         threatLevel = result.threatLevel || 'safe';
+        confidenceScore = result.safetyScore || 98;
     }
     
     console.log(`[Popup] Safety: ${safetyScore}%, Threat: ${threatLevel}`);
@@ -191,9 +194,13 @@ function updateDetectionDisplay(result) {
     const statusElement = document.querySelector('.detection-card .card-header .badge');
     const alertCard = document.getElementById('alertCard');
     const threatDetails = document.getElementById('threatDetails');
+    const confidenceScoreEl = document.getElementById('confidenceScore');
     
-    // Update percentage
+    // Update percentage and confidence
     percentageDisplay.textContent = Math.round(safetyScore) + '%';
+    if (confidenceScoreEl) {
+        confidenceScoreEl.textContent = (Math.round(confidenceScore * 10) / 10) + '%';
+    }
     
     // Remove threat state if safe
     if (threatLevel === 'safe') {
