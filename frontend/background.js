@@ -3,6 +3,11 @@
 const API_BASE_URL = 'http://localhost:5000';
 const API_TIMEOUT = 8000;
 
+// Handle extension icon click to open side panel
+chrome.action.onClicked.addListener(async (tab) => {
+    await chrome.sidePanel.open({tabId: tab.id});
+});
+
 chrome.runtime.onInstalled.addListener(() => {
     console.log('CyberSentinal extension installed');
     

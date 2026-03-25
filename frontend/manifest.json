@@ -7,9 +7,9 @@
     "activeTab",
     "scripting",
     "storage",
-    "webRequest",
     "tabs",
-    "webNavigation"
+    "webNavigation",
+    "sidePanel"
   ],
   "host_permissions": [
     "<all_urls>"
@@ -18,7 +18,10 @@
     "service_worker": "background.js"
   },
   "action": {
-    "default_popup": "popup/popup.html"
+    "default_title": "CyberSentinal - Scam Detector"
+  },
+  "side_panel": {
+    "default_path": "popup/popup.html"
   },
   "content_scripts": [
     {
