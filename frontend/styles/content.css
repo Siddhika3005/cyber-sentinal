@@ -1,5 +1,19 @@
 /* Content Script Styles */
 
+/* Main widget container - injected into page */
+.cyber-sentinel-widget-container {
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 400px;
+    min-height: 600px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 999999;
+    box-sizing: border-box;
+}
+
 /* Highlight suspicious links */
 a[href*="bit.ly"],
 a[href*="tinyurl"],
@@ -31,6 +45,9 @@ mark {
 /* Cyber Sentinel widget styles */
 .cyber-sentinel-widget {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .cyber-sentinel-banner {
